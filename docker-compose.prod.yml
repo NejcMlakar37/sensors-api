@@ -1,0 +1,71 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'production_sensors'
+      MYSQL_USER: 'sensor-user'
+      MYSQL_PASSWORD: 'sensor-password'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      production-sensors-network:
+        aliases:
+          - production-sensors-network
+
+  app:
+    container_name: production-sensors-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        GID: '1000'
+        UID: '1000'
+        UNAME: 'nejcm'
+    user: 'root'
+    restart: 'always'
+    command: bash -c "composer install && php artisan serve --host=0.0.0.0 --port=8888"
+    tty: true
+    networks:
+      production-sensors-network:
+        aliases:
+          - production-sensors-network
+    volumes:
+      - ./:/var/www/
+    working_dir: /var/www/
+    depends_on:
+      - mysql
+
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: production-sensors-api-nginx
+    restart: unless-stopped
+    ports:
+      - "8888:443"
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker-compose/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker-compose/Certs:/etc/nginx/certs
+    networks:
+      production-sensors-network:
+        aliases:
+          - production-sensors-network
+
+networks:
+  production-sensors-network:
+    driver: bridge
+volumes:
+  db_data:
+  sail-mysql:
+    driver: local
+  sail-redis:
+    driver: local

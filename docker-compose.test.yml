@@ -1,0 +1,58 @@
+# For more information: https://laravel.com/docs/sail
+version: "3.3"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-compose
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'production_sensors'
+      MYSQL_USER: 'sensor-user'
+      MYSQL_PASSWORD: 'sensor-password'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    tty: true
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      production-sensors-network:
+        aliases:
+          - production-sensors-network
+
+  app:
+    container_name: production-sensors-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        GID: '1000'
+        UID: '1000'
+        UNAME: 'nejcm'
+    user: '1000'
+    tty: true
+    ports:
+      - '5173:5173'
+    networks:
+      production-sensors-network:
+        aliases:
+          - production-sensors-network
+    volumes:
+      - ./:/var/www/
+    working_dir: /var/www/
+    depends_on:
+      - mysql
+
+networks:
+  production-sensors-network:
+    name: production-sensors-network
+    driver: bridge
+volumes:
+  db_data:
+  sail-mysql:
+    driver: local
+  sail-redis:
+    driver: local
