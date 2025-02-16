@@ -3,7 +3,6 @@
 namespace Tests\Feature\MeasurementLimits;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MeasurementLimitUpdateTest extends TestCase
@@ -47,13 +46,13 @@ class MeasurementLimitUpdateTest extends TestCase
                 'id' => $this->limitId,
                 'sensor' => [
                     'id' => 1,
-                    'name' => 'Sensor 1',
+                    'name' => 'Sensor 1 - 1',
                     'location' => 'Hala 1',
                 ],
-                'min_temp' => 25.00,
-                'max_temp' => 35.00,
-                'min_humidity' => 45.00,
-                'max_humidity' => 55.00,
+                'min_temp' => '25.00',
+                'max_temp' => '35.00',
+                'min_humidity' => '45.00',
+                'max_humidity' => '55.00',
             ],
         ]);
     }

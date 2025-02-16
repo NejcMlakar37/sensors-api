@@ -1,11 +1,11 @@
 <?php
 
-namespace Sensors;
+namespace Tests\Feature\Company;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class SensorDeleteTest extends TestCase
+class CompanyDeleteTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -28,15 +28,7 @@ class SensorDeleteTest extends TestCase
 
     public function test_delete_all_ok(): void
     {
-        $request = [
-            'name' => 'test-sensor-123',
-            'location' => 'Hala 123',
-            'position' => 123,
-            'company' => $this->companyId,
-        ];
-
-        $sensorId = json_decode($this->json('post', 'api/sensor/new', $request)->getContent(), true)['last_insert_id'];
-        $response = $this->json('delete', 'api/sensor/' . $sensorId);
+        $response = $this->json('delete', 'api/company/' . $this->companyId);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -46,34 +38,26 @@ class SensorDeleteTest extends TestCase
 
     public function test_delete_connected(): void
     {
-        $request = [
-            'name' => 'test-sensor-123',
-            'location' => 'Hala 123',
-            'position' => 123,
+        $sensorRequest = [
+            'name' => 'test-sensor-1',
+            'location' => 'Hala 1',
+            'position' => 89,
             'company' => $this->companyId,
         ];
 
-        $sensorId = json_decode($this->json('post', 'api/sensor/new', $request)->getContent(), true)['last_insert_id'];
-
-        $requestMeasurement = [
-            'sensor_id' => $sensorId,
-            'temperature' => 24.55,
-            'humidity' => 44.90,
-        ];
-
-        $this->json('post', 'api/measurement/new', $requestMeasurement);
-        $response = $this->json('delete', 'api/sensor/' . $sensorId);
+        $this->json('post', 'api/sensor/new', $sensorRequest);
+        $response = $this->json('delete', 'api/company/' .  $this->companyId);
 
         $response->assertStatus(500);
         $response->assertJson([
             'success' => false,
-            'message' => "Sensor ima povezane entitete"
+            'message' => "Podjetje ima povezane senzorje!"
         ]);
     }
 
     public function test_delete_nonexistent(): void
     {
-        $response = $this->json('delete', 'api/sensor/-11');
+        $response = $this->json('delete', 'api/company/-11');
         $response->assertStatus(404);
     }
 }

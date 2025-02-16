@@ -8,6 +8,7 @@ use App\Http\Resources\SensorResource;
 use App\Models\Sensor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class SensorController extends Controller
@@ -23,7 +24,8 @@ class SensorController extends Controller
             ->defaultSort('name')
             ->allowedFilters([
                 'name',
-                'location'
+                'location',
+                AllowedFilter::exact('company_id'),
             ])
             ->allowedSorts('name, location')->get();
 
@@ -41,6 +43,7 @@ class SensorController extends Controller
             'name' => $request->input('name'),
             'location' => $request->input('location'),
             'position' => $request->input('position'),
+            'company_id' => $request->input('company'),
         ]);
 
         if($sensor->save()) {
@@ -75,6 +78,7 @@ class SensorController extends Controller
         $sensor->name = $request->input('name');
         $sensor->location = $request->input('location');
         $sensor->position = $request->input('position');
+        $sensor->company_id = $request->input('company');
 
         if($sensor->save()) {
             return response()->success(new SensorResource($sensor));

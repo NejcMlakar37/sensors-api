@@ -18,6 +18,7 @@ class SensorResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,
+            'company' => $this->resource->company_id,
             'location' => $this->resource->location,
             'position' => $this->resource->position,
             'battery' => $this->resource->currentBattery?

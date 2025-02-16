@@ -3,7 +3,6 @@
 namespace Tests\Feature\Recipients;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RecipientFindTest extends TestCase
@@ -26,7 +25,7 @@ class RecipientFindTest extends TestCase
                 'id' => $recipientId,
                 'sensor' => [
                     'id' => 1,
-                    'name' => 'Sensor 1',
+                    'name' => 'Sensor 1 - 1',
                     'location' => 'Hala 1',
                 ],
                 'email' => 'n.mlakar@resistec.si',

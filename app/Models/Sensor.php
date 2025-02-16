@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -20,7 +21,15 @@ class Sensor extends Model
     public $timestamps = false;
     protected $table = "sensors";
     protected $primaryKey = "id";
-    protected $fillable = ["name", "location", "position", 'active_temp_alarm', 'active_humid_alert'];
+    protected $fillable = ["name", "location", "position", 'active_temp_alarm', 'active_humid_alert', 'company_id'];
+
+    /**
+     * @return BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id', 'id');
+    }
 
     /**
      * @return HasMany

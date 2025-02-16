@@ -26,6 +26,7 @@ class UpdateSensorRequest extends FormRequest
             'name' => ['required', 'string', 'max:75'],
             'location' => ['required', 'string', 'max:75'],
             'position' => ['required', 'numeric'],
+            'company' => ['required', 'numeric', 'exists:companies,id'],
         ];
     }
 }

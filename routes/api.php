@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BatteryStatusController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmailRecipientController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MeasurementController;
@@ -20,6 +21,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['throttle:30,1'])->group(function () {
+
+    /**
+     * Company routes
+     */
+    Route::get("/company/all", [CompanyController::class, "index"])->name("company.all");
+    Route::get("/company/find/{id}", [CompanyController::class, "show"])->name("company.find");
+    Route::post("/company/new", [CompanyController::class, "store"])->name("company.new");
+    Route::put("/company/update/{id}", [CompanyController::class, "update"])->name('company.update');
+    Route::delete("/company/{id}", [CompanyController::class, "destroy"])->name('company.destroy');
+
     /**
      * Sensor routes
      */
@@ -27,7 +38,7 @@ Route::middleware(['throttle:30,1'])->group(function () {
     Route::get("/sensor/find/{id}", [SensorController::class, "show"])->name("sensor.find");
     Route::post("/sensor/new", [SensorController::class, "store"])->name("sensor.new");
     Route::put("/sensor/update/{id}", [SensorController::class, "update"])->name('sensor.update');
-    Route::delete("/sensor/{id}", [SensorController::class, "destroy"])->name('users.destroy');
+    Route::delete("/sensor/{id}", [SensorController::class, "destroy"])->name('sensor.destroy');
 
     /**
      * Measurement routes

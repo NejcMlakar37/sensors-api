@@ -9,12 +9,30 @@ class SensorUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
+    private int $companyId = -1;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $request = [
+            'name' => 'test-company-1',
+            'address' => 'Hala 1',
+            'city' => 'Mengeš',
+            'postcode' => '1234',
+            'country' => 'Slovenija',
+            'email' => 't.testko@gmail.com',
+        ];
+
+        $this->companyId = json_decode($this->json('post', 'api/company/new', $request)->getContent(), true)['last_insert_id'];
+    }
+
     public function test_update_all_ok(): void
     {
         $request = [
             'name' => 'test-sensor-1',
             'location' => 'Hala-test-1',
             'position' => 12,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('put', 'api/sensor/update/1', $request);
@@ -26,6 +44,7 @@ class SensorUpdateTest extends TestCase
                 'name' => 'test-sensor-1',
                 'location' => 'Hala-test-1',
                 'position' => 12,
+                'company' => $this->companyId,
             ],
         ]);
     }
@@ -36,6 +55,7 @@ class SensorUpdateTest extends TestCase
             'name' => 'test-sensor-1',
             'location' => 'Hala-test-1',
             'position' => 12,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('put', 'api/sensor/update/-17', $request);
@@ -47,6 +67,7 @@ class SensorUpdateTest extends TestCase
         $request = [
             'name' => 'test-sensor-1',
             'position' => 12,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('put', 'api/sensor/update/1', $request);
