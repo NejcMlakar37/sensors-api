@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\BatteryLowMail;
 use App\Mail\DeEscalationEmail;
 use App\Mail\EscalationEmail;
 use App\Models\Incident;
@@ -49,6 +50,16 @@ class AlarmService
                 $this->changeHumidityAlarmStatus($sensor, false);
                 $this->sentDeEscalationEmail($sensor->recipients->pluck('email')->toArray(), $sensor->toArray(), 'humidity');
             }
+        }
+    }
+
+    public function handleBatteryStatus(int $sensorId, float $battery): void
+    {
+        if($battery <= 25.00)
+        {
+            $sensor = Sensor::query()->with('recipients')->findOrFail($sensorId);
+            $recipients = $sensor->recipients->pluck('email')->toArray();
+            $this->sendBatteryLowEmail($recipients, $sensor->toArray(), $battery);
         }
     }
 
@@ -100,6 +111,19 @@ class AlarmService
     {
         if(!empty($recipients)) {
             Mail::to($recipients)->send(new DeEscalationEmail($sensor, $type));
+        }
+    }
+
+    /**
+     * @param array $recipients
+     * @param array $sensor
+     * @param float $battery
+     * @return void
+     */
+    private function sendBatteryLowEmail(array $recipients, array $sensor, float $battery): void
+    {
+        if(!empty($recipients)) {
+            Mail::to($recipients)->send(new BatteryLowMail($sensor, $battery));
         }
     }
 
