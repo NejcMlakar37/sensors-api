@@ -20,4 +20,12 @@ class Company extends Model
     {
         return $this->hasMany(Sensor::class);
     }
+
+    /**
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 }

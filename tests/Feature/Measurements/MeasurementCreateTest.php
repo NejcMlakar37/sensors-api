@@ -2,13 +2,25 @@
 
 namespace Tests\Feature\Measurements;
 
+use App\Models\Sensor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class MeasurementCreateTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Sanctum::actingAs(
+            Sensor::query()->first(),
+            ['*'],
+            'api-sensors'
+        );
+    }
 
     public function test_create_all_ok(): void
     {

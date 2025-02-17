@@ -7,6 +7,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\MeasurementLimitController;
 use App\Http\Controllers\SensorController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +21,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::middleware('auth:api-sensors')->group(function () {
+    Route::post("/measurement/new", [MeasurementController::class, "store"])->name("measurement.new");
+    Route::post("/battery-status/new", [BatteryStatusController::class, "store"])->name("battery-status.new");
+});
+
 Route::middleware(['throttle:30,1'])->group(function () {
+    Route::post('/login', [UserController::class, 'login'])->name('user.login');
+});
+
+Route::middleware(['throttle:30,1', 'auth:api-users'])->group(function () {
+
+    /**
+     * User routes
+     */
+    Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
+    Route::post('/change-password', [UserController::class, 'passwordChange'])->name('user.passwordChange');
 
     /**
      * Company routes
@@ -49,7 +65,6 @@ Route::middleware(['throttle:30,1'])->group(function () {
     Route::get("/measurement/index", [MeasurementController::class, "index"])
         ->name("measurement.index");
     Route::get('/measurement/export/', [MeasurementController::class, 'exportToExcel'])->name("measurement.export");
-    Route::post("/measurement/new", [MeasurementController::class, "store"])->name("measurement.new");
     Route::delete("/measurement/{id}", [MeasurementController::class, "destroy"])->name("measurement.destroy");
 
     /**

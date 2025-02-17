@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property string $name
@@ -15,9 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property bool $active_humid_alert
  * @property int $id
  */
-class Sensor extends Model
+class Sensor extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
+
     public $timestamps = false;
     protected $table = "sensors";
     protected $primaryKey = "id";

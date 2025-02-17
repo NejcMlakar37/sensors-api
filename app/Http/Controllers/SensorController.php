@@ -27,8 +27,10 @@ class SensorController extends Controller
                 'location',
                 AllowedFilter::exact('company_id'),
             ])
-            ->allowedSorts('name, location')->get();
-
+            ->allowedSorts('name, location')
+            ->where('company_id', auth()->user()->company_id)
+            ->get();
+        
         return SensorResource::collection($sensors);
     }
 
