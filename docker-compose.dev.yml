@@ -2,7 +2,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: sensors-mysql
     restart: unless-stopped
     ports:
       - '${FORWARD_DB_PORT:-3306}:3306'
@@ -44,22 +44,9 @@ services:
     depends_on:
       - mysql
 
-  nginx:
-    image: nginx:1.17-alpine
-    container_name: dev-sensors-api-nginx
-    restart: unless-stopped
-    ports:
-      - "8000:8888"
-    volumes:
-      - ./:/var/www
-      - ./docker-compose/nginx:/etc/nginx/conf.d
-    networks:
-      dev-sensors-network:
-        aliases:
-          - dev-sensors-network
-
   mailhog:
     image: 'mailhog/mailhog:latest'
+    container_name: sensors-smtp-server
     ports:
       - '${FORWARD_MAILHOG_PORT:-1025}:1025'
       - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
