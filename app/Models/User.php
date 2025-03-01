@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    protected $fillable = ['username', 'email', 'password', 'remember_token', 'company_id'];
+    protected $fillable = ['username', 'email', 'password', 'remember_token', 'company_id', 'role_id'];
     protected  $primaryKey = 'id';
     protected $hidden = [
         'password',
@@ -28,5 +28,13 @@ class User extends Authenticatable
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 }

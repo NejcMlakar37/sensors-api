@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['172.22.0.10:3033', '0.0.0.0:3033', '127.0.0.1:3033', 'http://127.0.0.1:3033', 'http://172.22.0.10:3033/', 'sensors.resistec.si', 'www.sensors.resistec.si', 'https://sensors.resistec.si'],
+    'allowed_origins' => ['127.0.0.1:3000', '0.0.0.0:3000', 'http://127.0.0.1:3000', 'www.127.0.0.1:3000'],
 
     'allowed_origins_patterns' => [],
 

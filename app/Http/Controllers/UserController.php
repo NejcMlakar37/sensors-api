@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\UserLoginRequest;
 use App\Http\Requests\User\UserPasswordChangeRequest;
+use App\Http\Resources\AuthenticatedUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,14 +18,18 @@ class UserController extends Controller
      */
     public function login(UserLoginRequest $request): mixed
     {
-        $user = User::query()->where('email', $request->email)->first();
+        $user = User::query()->with(['company', 'role'])->where('email', $request->email)->first();
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->error('Nepravilno geslo ali e-mail!');
         }
 
         $user->tokens()->delete();
-        $token = $user->createToken('user-token', [], null, Str::random(32));
-        return response()->success(['token' => $token->plainTextToken]);
+        $token = $user->createToken('user-token', [], now()->addDay(), Str::random(32));
+
+        return response()->success(new AuthenticatedUserResource([
+            'user' => $user,
+            'token' => $token->plainTextToken
+        ]));
     }
 
     /**
@@ -47,6 +52,14 @@ class UserController extends Controller
         } else {
             return response()->error('Prišlo je do napake pri posodabljanju gesla!');
         }
+    }
+
+    public function me(Request $request)
+    {
+        return response()->success(new AuthenticatedUserResource([
+            'user' => $request->user()->load('role', 'company'),
+            'token' => ''
+        ]));
     }
 
     /**

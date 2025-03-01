@@ -30,12 +30,13 @@ Route::middleware(['throttle:30,1'])->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
 });
 
-Route::middleware(['throttle:30,1', 'auth:api-users'])->group(function () {
+Route::middleware(['throttle:30,1', 'auth:sanctum'])->group(function () {
 
     /**
      * User routes
      */
     Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
+    Route::get('/user', [UserController::class, 'me'])->name('auth.me');
     Route::post('/change-password', [UserController::class, 'passwordChange'])->name('user.passwordChange');
 
     /**
