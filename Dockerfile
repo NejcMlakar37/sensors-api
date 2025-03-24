@@ -1,5 +1,5 @@
 # Use the official PHP image as the base image
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 ARG UNAME=dockeruser
 ARG UID=1000
