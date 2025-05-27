@@ -1,0 +1,75 @@
+# For more information: https://laravel.com/docs/sail
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-sensors-stage
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_DB_PORT:-3308}:3308'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_TCP_PORT: 3308
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      sensors-app:
+
+  app:
+    container_name: sensors-api-stage
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+      args:
+        GID: '1000'
+        UID: '1000'
+        UNAME: 'nejcm'
+    user: 'root'
+    environment:
+      - APP_ENV=stage
+      - APP_DEBUG=true
+    ports:
+      - '8888:8888'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    tty: true
+    restart: always
+    env_file:
+      - .env.stage
+    networks:
+      sensors-app:
+    volumes:
+      - ./storage:/var/www/storage
+      - ./.env.stage:/var/www/.env.stage
+    depends_on:
+      - mysql
+
+  smtp:
+    image: mailhog/mailhog
+    container_name: smtp-sensors-stage
+    logging:
+      driver: 'none'
+    ports:
+      - "8003:1025"
+      - "8100:8025"
+    networks:
+      sensors-app:
+        aliases:
+          - sensors-network
+
+networks:
+  sensors-app:
+    name: sensors-network
+    driver: bridge
+volumes:
+  db_data:
+  sail-mysql:
+    driver: local
+  sail-redis:
+    driver: local
