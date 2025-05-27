@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SensorSeeder::class,
-            MeasurementSeeder::class,
+//            MeasurementSeeder::class,
             BatteryStatusesSeeder::class,
         ]);
     }
