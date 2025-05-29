@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             SensorSeeder::class,
-            MeasurementSeeder::class,
+//            MeasurementSeeder::class,
             BatteryStatusesSeeder::class,
         ]);
     }

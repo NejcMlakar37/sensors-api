@@ -1,0 +1,70 @@
+FROM php:8.2-fpm
+
+ARG UNAME=nejcm
+ARG UID=1000
+ARG GID=1000
+
+USER root
+
+WORKDIR /var/www/
+
+RUN apt-get update && \
+    apt-get install -y gnupg libicu-dev libldap2-dev -y libzip-dev libpng-dev unzip nginx supervisor unixodbc-dev && \
+    mkdir -p ~/.gnupg && \
+    chmod 600 ~/.gnupg && \
+    docker-php-ext-install intl pdo pdo_mysql zip ldap gd && \
+    pecl install redis xdebug && \
+    docker-php-ext-enable redis xdebug && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+
+# Create user and set permissions
+RUN useradd -u $UID $UNAME
+RUN mkdir -p /var/www/public/build
+RUN chmod -R 775 /var/www/
+
+# Configure Nginx
+COPY ./docker/nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Configure Supervisor
+COPY ./docker/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./docker/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Copy application files
+COPY --chown=$UNAME:$UNAME . /var/www/
+RUN chown -R $UNAME:www-data /var/www && \
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache && \
+    chmod -R 755 /var/www/public
+
+# Set working directory
+WORKDIR /var/www/
+
+# Install PHP dependencies
+RUN composer install --no-interaction --no-dev --optimize-autoloader
+
+# Build frontend assets
+RUN npm i && \
+    npm run build && \
+    rm -rf node_modules
+
+# Copy setup script
+COPY --chown=root:root docker/setup.sh /usr/local/bin/setup.sh
+RUN chmod +x /usr/local/bin/setup.sh
+
+# Expose port
+EXPOSE 8888
+
+# Start services
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
