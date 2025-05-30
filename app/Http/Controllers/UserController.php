@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\UserLoginRequest;
 use App\Http\Requests\User\UserPasswordChangeRequest;
-use App\Http\Resources\AuthenticatedUserResource;
+use App\Models\Sensor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
@@ -18,18 +21,15 @@ class UserController extends Controller
      */
     public function login(UserLoginRequest $request): mixed
     {
-        $user = User::query()->with(['company', 'role'])->where('email', $request->email)->first();
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->error('Nepravilno geslo ali e-mail!');
+        $user = User::query()->with('company')->where('email', $request->get('email'))->first();
+        if (!$user || !Hash::check($request->get('password'), $user->password)) {
+            return back()->withErrors(['message' => "Napačno uporabniško ime ali geslo!"]);
         }
 
-        $user->tokens()->delete();
-        $token = $user->createToken('user-token', [], now()->addDay(), Str::random(32));
+        Auth::login($user, $request->boolean('remember'));
+        $request->session()->regenerate();
 
-        return response()->success(new AuthenticatedUserResource([
-            'user' => $user,
-            'token' => $token->plainTextToken
-        ]));
+        return Inertia::location(route('home'));
     }
 
     /**
@@ -54,12 +54,12 @@ class UserController extends Controller
         }
     }
 
-    public function me(Request $request)
+    public function homePage(): Response
     {
-        return response()->success(new AuthenticatedUserResource([
-            'user' => $request->user()->load('role', 'company'),
-            'token' => ''
-        ]));
+        $sensors = Sensor::query()->with('latestMeasurement')->get();
+        return Inertia::render('Home', [
+            'sensorsWithLatest' => $sensors,
+        ]);
     }
 
     /**
@@ -68,7 +68,11 @@ class UserController extends Controller
      */
     public function logout(Request $request): mixed
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->success(['message' => 'Izpis uspešen!']);
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Inertia::location(route('login'));
     }
 }

@@ -26,6 +26,7 @@ Route::middleware('auth:api-sensors')->group(function () {
     Route::post("/battery-status/new", [BatteryStatusController::class, "store"])->name("battery-status.new");
 });
 
+
 Route::middleware(['throttle:30,1'])->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
 });

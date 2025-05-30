@@ -14,14 +14,16 @@ class BatteryStatusesSeeder extends Seeder
     public function run(): void
     {
         $date = Carbon::now();
-        $sensor = DB::table('sensors')->first();
+        $sensors = DB::table('sensors')->get();
 
-        for ($i=0; $i < 480; $i++) {
-            DB::table('battery_statuses')->insert([
-                'sensor_id' => $sensor->id,
-                'status' => fake()->randomFloat(2, 0, 100),
-                'created_at' => $date->toDateTimeString(),
-            ]);
+        for ($i=0; $i < 120; $i++) {
+            foreach ($sensors as $sensor) {
+                DB::table('battery_statuses')->insert([
+                    'sensor_id' => $sensor->id,
+                    'status' => fake()->randomFloat(2, 0, 100),
+                    'created_at' => $date->toDateTimeString(),
+                ]);
+            }
 
             $date->addMinutes(30);
         }

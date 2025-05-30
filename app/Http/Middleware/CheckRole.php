@@ -16,7 +16,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         if (!$request->user()) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            return redirect()->route('login');
         }
 
         if ($request->user()->hasRole('super-admin')) {
@@ -29,6 +29,6 @@ class CheckRole
             }
         }
 
-        return response()->json(['message' => 'Unauthorized. You do not have the required permissions.'], 403);
+        return redirect()->route('/')->with('error', 'You do not have permission to access this section.');
     }
 }

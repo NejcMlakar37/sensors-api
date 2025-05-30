@@ -24,6 +24,12 @@ class Sensor extends Authenticatable
     protected $table = "sensors";
     protected $primaryKey = "id";
     protected $fillable = ["name", "location", "position", 'active_temp_alarm', 'active_humid_alert', 'company_id'];
+    protected $casts = [
+        'active_temp_alarm' => 'boolean',
+        'active_humid_alert' => 'boolean',
+        'company_id' => 'integer',
+        'position' => 'integer'
+    ];
 
     /**
      * @return BelongsTo
@@ -76,5 +82,13 @@ class Sensor extends Authenticatable
     public function incidents(): HasMany
     {
         return $this->hasMany(Incident::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function latestMeasurement(): HasOne
+    {
+        return $this->hasOne(Measurement::class)->latest('timestamp');
     }
 }
