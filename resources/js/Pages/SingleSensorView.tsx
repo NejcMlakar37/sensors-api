@@ -7,11 +7,11 @@ import AlertBadge from '../Components/Icons/AlertBadge';
 import LineChart from '../Components/Charts/LineChart';
 import IncidentsView from './IncidentsView';
 import SettingsView from './SettingsView';
+import useReload from '../Hooks/useReload';
 
 const SingleSensorView = ({sensor, measurements, incidents, limit, recipients}: {sensor: Sensor, measurements: Measurement[], incidents: Incident[], limit: SensorLimit, recipients: Recipient[] }) => {
     const [activeTab, setActiveTab] = useState<number>(1);
-
-    console.log(sensor, measurements, incidents, limit, recipients);
+    useReload();
 
     const tabs = [
         {

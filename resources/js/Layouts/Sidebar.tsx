@@ -9,8 +9,6 @@ import BatteryIconController from '../Components/Icons/BatteryIconController';
 const Sidebar = () => {
     const { auth, sensors } = usePage<PageProps>().props;
 
-    console.log(sensors);
-
     const logoutHandler = () => {
         router.post('/logout');
     };

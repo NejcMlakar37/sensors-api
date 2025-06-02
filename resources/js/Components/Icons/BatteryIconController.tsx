@@ -3,8 +3,6 @@ import FullBatteryIcon from './FullBatteryIcon';
 import HalfEmptyBatteryIcon from './HalfEmptyBatteryIcon';
 
 const BatteryIconController = ({value}: {value: string | number}) => {
-    console.log(value);
-
     if(value === '/') {
         return <EmptyBatteryIcon color={'#323F4B'} size={'lg'} />;
     }

@@ -1,7 +1,10 @@
 import TempHumidityChart from '../Components/Charts/TempHumidityChart';
 import NativeClock from '../Components/NativeClock';
+import useReload from '../Hooks/useReload';
 
 const SensorCurrentView = ({sensor}: {sensor : SensorWithLatest}) => {
+    useReload();
+
     return <div className={'flex h-screen bg-black-700 text-black-900 font-roboto'} >
         <div className='flex md:flex-row justify-between my-auto w-screen flex-col'>
             <div className={'text-center justify-center flex flex-col m-auto space-y-8'}>
