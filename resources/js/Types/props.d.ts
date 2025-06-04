@@ -1,5 +1,6 @@
 import {SizeProp} from '@fortawesome/fontawesome-svg-core';
 import {HTMLInputTypeAttribute, ReactElement, ReactNode} from 'react';
+import {Type} from '../Services/Enums';
 
 export {};
 
@@ -15,6 +16,23 @@ declare global {
         active: boolean,
         activeAlarm: boolean
         icon?: ReactNode,
+    }
+
+    type IconButtonProps = {
+        title: string,
+        color?: string,
+        activeColor?: string,
+        direction: 'row' | 'flex-row-reverse space-x-reverse'
+        onClick?: () => void,
+        icon: ReactElement;
+        type: 'button' | 'submit' | 'reset' | undefined,
+    }
+
+    type MeasurementsFilterComponentProps = {
+        sensor: SensorWithLatest,
+        isTemperature: boolean,
+        isHumidity: boolean,
+        handleClicked: (type: Type) => void
     }
 
     type ButtonProps = {

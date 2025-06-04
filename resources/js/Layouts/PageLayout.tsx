@@ -8,7 +8,7 @@ const PageLayout = ({children}: {children: ReactElement}) => {
 
     return <div className="flex flex-row min-h-screen min-w-screen bg-black-700 text-black-900 font-roboto">
         <Sidebar />
-        <div className="flex-row w-full justify-center align-middle">
+        <div className="flex-row w-full justify-center align-middle pt-4 px-4">
                 {children}
         </div>
         <ToastContainer

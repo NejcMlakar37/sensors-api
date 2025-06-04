@@ -19,6 +19,7 @@ import {
     faDroplet,
     faEdit,
     faExclamation,
+    faFileExcel,
     faFileLines,
     faFilePdf,
     faFilter,
@@ -187,6 +188,10 @@ const Icons = {
 
     Extend: memo(({ color, size }: IconProps) => {
         return <FontAwesomeIcon icon={faArrowUpRightFromSquare} color={color} size={size}/>;
+    }),
+
+    Excel: memo(({ color, size }: IconProps) => {
+        return <FontAwesomeIcon icon={faFileExcel} color={color} size={size}/>;
     }),
 
     Temperature: memo(({ color, size }: IconProps) => {

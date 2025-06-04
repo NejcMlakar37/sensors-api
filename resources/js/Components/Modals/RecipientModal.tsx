@@ -1,15 +1,16 @@
 import {FormEvent, useCallback, useEffect, useState} from 'react';
 import Modal from 'react-modal';
-import useCrud from '../../Hooks/useCrud';
 import {fullModalStyle} from '../../Services/modal-styles';
 import SectionTitleRow from '../Titles/SectionTitleRow';
 import PrimaryButton from '../Buttons/PrimaryButton';
 import Icons from '../Icons/Icons';
 import StringInputField from '../Form/StringInputField';
+import {router} from '@inertiajs/react';
+import SaveButtonSpinner from '../Icons/SaveButtonSpinner';
 
 const RecipientModal = ({ modalIsOpen, closeModal, existingRecipient }: {modalIsOpen: boolean, closeModal: () => void, existingRecipient: Recipient}) => {
     const [recipient, setRecipient] = useState<Recipient>(existingRecipient);
-    const {storeMutation, updateMutation} = useCrud<Recipient>('/recipient');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect((): void => {
         setRecipient(existingRecipient);
@@ -25,13 +26,40 @@ const RecipientModal = ({ modalIsOpen, closeModal, existingRecipient }: {modalIs
         e.preventDefault();
 
         if (recipient.id === -1) {
-            storeMutation.mutate(recipient);
+            router.post('/recipient', {
+                sensor_id: recipient.sensor?.id ?? -1,
+                email: recipient.email,
+            },
+            {
+                only: ['recipients', 'flash'],
+                onStart: () => setIsLoading(true),
+                onFinish: () => {
+                    setIsLoading(false);
+                    closeModal();
+                },
+                preserveState: true,
+                preserveScroll: true,
+            });
         } else {
-            updateMutation.mutate(recipient.id, recipient);
+            router.put(`/recipient/${recipient.id}`,
+                {
+                    recipient_id: recipient.id,
+                    sensor_id: recipient.sensor?.id ?? -1,
+                    email: recipient.email,
+                },
+                {
+                    only: ['recipients', 'flash'],
+                    onStart: () => setIsLoading(true),
+                    onFinish: () => {
+                        setIsLoading(false);
+                        closeModal();
+                    },
+                    preserveState: true,
+                    preserveScroll: true,
+            });
         }
 
-        closeModal();
-    }, [storeMutation, updateMutation, recipient]);
+    }, [recipient]);
 
     return <Modal
         isOpen={modalIsOpen}
@@ -72,7 +100,7 @@ const RecipientModal = ({ modalIsOpen, closeModal, existingRecipient }: {modalIs
                         color: 'bg-teal-500 text-black-100',
                         activeColor: 'hover:bg-teal-400',
                         direction: 'row',
-                        icon: <Icons.Add size={'1x'} />,
+                        icon: isLoading? <SaveButtonSpinner /> : <Icons.Add size={'1x'} />,
                         type: 'submit',
                     }}/>
                 </div>

@@ -19,3 +19,23 @@ export const valueToPercentage = (value: number) => {
     if (value > 32) value = 32;
     return ((value - min) * 100) / (max - min);
 }
+
+export const getDatesFromURL = (): DateFilter[] => {
+    const currentUrl = new URL(window.location.href);
+    const params = new URLSearchParams(currentUrl.search);
+    const filterTimestamp: string | null = params.get('filter[timestamp]');
+
+    let start = formatDateToString(new Date( new Date().setDate(new Date().getDate() - 2)));
+    let end = formatDateToString(new Date( new Date().setDate(new Date().getDate() + 1)));
+
+    if (filterTimestamp) {
+        const dates = filterTimestamp.split(',');
+        start = dates[0];
+        end = dates[1];
+    }
+
+    return [
+        {title: 'Od', name: 'dateStart', value: start},
+        {title: 'Do', name: 'dateEnd', value: end}
+    ]
+}

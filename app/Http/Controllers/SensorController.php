@@ -10,6 +10,7 @@ use App\Http\Resources\MeasurementLimitResource;
 use App\Http\Resources\MeasurementResource;
 use App\Http\Resources\SensorResource;
 use App\Http\Resources\SensorWithLatestResource;
+use App\Models\Measurement;
 use App\Models\Sensor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -69,11 +70,22 @@ class SensorController extends Controller
      */
     public function show(int $id): Response
     {
-        $sensor = Sensor::query()->with(['measurements', 'currentBattery', 'limits', 'recipients', 'incidents'])->findOrFail($id);
+        $sensor = Sensor::query()->with(['latestMeasurement', 'currentBattery', 'limits', 'recipients', 'incidents'])->findOrFail($id);
 
+        $measurements = QueryBuilder::for(Measurement::class)
+            ->where('sensor_id', $id)
+            ->defaultSort('-timestamp')
+            ->allowedFilters([
+                AllowedFilter::scope('timestamp')
+            ])
+            ->allowedSorts('timestamp')
+            ->get();
+
+        $count = $measurements->count();
+        
         return Inertia::render('SingleSensorView', [
-            'sensor' => new SensorResource($sensor),
-            'measurements' => MeasurementResource::collection([]),
+            'sensor' => new SensorWithLatestResource($sensor),
+            'measurements' => MeasurementResource::collection($measurements->nth(ceil($count / 500))),
             'incidents' => IncidentResource::collection($sensor->incidents),
             'limit' => $sensor->limits != null? new MeasurementLimitResource($sensor->limits): null,
             'recipients' => EmailRecipientResource::collection($sensor->recipients)

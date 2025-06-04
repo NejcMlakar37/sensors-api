@@ -39,6 +39,12 @@ declare global {
         };
     };
 
+    type DateFilter = {
+        title: string;
+        name: string;
+        value: string;
+    }
+
     type Sensor = {
         id: number,
         name: string,

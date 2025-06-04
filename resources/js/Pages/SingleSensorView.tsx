@@ -1,17 +1,56 @@
 import PageLayout from '../Layouts/PageLayout';
-import {getChartData} from '../Services/chart-utils';
-import {useState} from 'react';
+import {getChartData, getDatesFromURL, getDefaultDates} from '../Services/chart-utils';
+import {useCallback, useState} from 'react';
 import TabBarButton from '../Components/Buttons/TabBarButton';
-import {Unit} from '../Services/Enums';
+import {Type, Unit} from '../Services/Enums';
 import AlertBadge from '../Components/Icons/AlertBadge';
 import LineChart from '../Components/Charts/LineChart';
 import IncidentsView from './IncidentsView';
 import SettingsView from './SettingsView';
 import useReload from '../Hooks/useReload';
+import MeasurementsFilterComponent from '../Components/Filters/MeasurementsFilterComponent';
+import DateFilterComponent from '../Components/Filters/DateFilterComponent';
+import {Link, router} from '@inertiajs/react';
+import Icons from '../Components/Icons/Icons';
 
-const SingleSensorView = ({sensor, measurements, incidents, limit, recipients}: {sensor: Sensor, measurements: Measurement[], incidents: Incident[], limit: SensorLimit, recipients: Recipient[] }) => {
+const SingleSensorView = ({sensor, measurements, incidents, limit, recipients}: {sensor: SensorWithLatest, measurements: Measurement[], incidents: Incident[], limit: SensorLimit, recipients: Recipient[] }) => {
     const [activeTab, setActiveTab] = useState<number>(1);
+    const [isTemperature, setIsTemperature] = useState<boolean>(true);
+    const [isHumidity, setIsHumidity] = useState<boolean>(true);
+    const [dateFilters, setDateFilters] = useState<DateFilter[]>(getDatesFromURL());
     useReload();
+
+    const getQueryString = useCallback((dateFilters: DateFilter[]) => {
+        if (dateFilters[0].value === '' || dateFilters[1].value === '') {
+            const nonEmptyDate = dateFilters.find((date: DateFilter) => date.value !== '');
+            if (nonEmptyDate) {
+                return `filter[timestamp]=${nonEmptyDate.value} 00:00:00,${nonEmptyDate.value} 24:00:00`;
+            } else {
+                const defaultDates = getDefaultDates(new Date());
+                return `filter[timestamp]=${defaultDates.start},${defaultDates.end}`;
+            }
+        } else {
+            return `filter[timestamp]=${dateFilters[0].value},${dateFilters[1].value}`;
+        }
+    }, [])
+
+    const handleFiltersChange = useCallback((name: string, value: string) => {
+        const filters: DateFilter[] = dateFilters.map((dateFilter: DateFilter): DateFilter => dateFilter.name === name? {...dateFilter, value: value} : dateFilter );
+        router.get(`/sensors/${sensor.id}?${getQueryString(filters)}`, {
+            only: ['measurements'],
+            replace: true,
+            preserveState: true,
+            preserveScroll: true
+        })
+    }, []);
+
+    const handleCheckedChange = (type: Type) => {
+        if (type === Type.Temperature) {
+            setIsTemperature(!isTemperature);
+        } else {
+            setIsHumidity(!isHumidity);
+        }
+    }
 
     const tabs = [
         {
@@ -65,41 +104,41 @@ const SingleSensorView = ({sensor, measurements, incidents, limit, recipients}: 
     ];
 
     return (
-        <div className='flex flex-row'>
+        <div className='flex flex-row p-4'>
             <div className='flex flex-col w-full space-y-8'>
-                {/*<div className='flex flex-row justify-between items-center'>*/}
-                {/*    <div className={'flex flex-row items-center justify-center space-x-5'}>*/}
-                {/*        <MeasurementsFilterComponent*/}
-                {/*            sensorId={sensorId}*/}
-                {/*            isTemperature={isTemperature}*/}
-                {/*            isHumidity={isHumidity}*/}
-                {/*            handleClicked={handleCheckedChange}*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*    <DateFilterComponent dateFilters={dateFilters} callback={handleDateFilterChange}/>*/}
-                {/*</div>*/}
+                <div className='flex flex-row justify-between items-center'>
+                    <div className={'flex flex-row items-center justify-center space-x-5'}>
+                        <MeasurementsFilterComponent
+                            sensor={sensor}
+                            isTemperature={isTemperature}
+                            isHumidity={isHumidity}
+                            handleClicked={handleCheckedChange}
+                        />
+                    </div>
+                    <DateFilterComponent dateFilters={dateFilters} callback={handleFiltersChange}/>
+                </div>
 
                 <div
-                    className="flex flex-row w-full items-center justify-between space-x-5 text-lg font-medium border-b-2 pb-4 border-black-100/25">
+                    className="flex flex-row w-full items-center justify-between text-lg font-medium border-b-2 pb-4 border-black-100/25">
                     <div className={'flex flex-row items-center justify-center space-x-5'}>
                         {tabs.map(tab => (tab.button))}
                     </div>
-                    {/*<div className={'flex flex-row items-center justify-center space-x-5'}>*/}
-                    {/*    <div className='flex justify-center m-auto hover:scale-125 transition-all ease-in-out'>*/}
-                    {/*        <Link to={`/sensors/full-screen/${sensorId}`}*/}
-                    {/*              className={'text-black-100 hover:text-blue-300'}>*/}
-                    {/*            <ExtendIcon size={"xl"}/>*/}
-                    {/*        </Link>*/}
-                    {/*    </div>*/}
-                    {/*    <div className='flex justify-center m-auto hover:scale-125 transition-all ease-in-out'>*/}
-                    {/*        <Link*/}
-                    {/*            to={`${import.meta.env.VITE_API_BASE_URL}measurement/export?filter[sensor_id]=${sensorId}&filter[timestamp]=${dateFilters[0].value},${dateFilters[1].value}`}*/}
-                    {/*            target={'_blank'}*/}
-                    {/*            className={'text-black-100 hover:text-teal-600'}>*/}
-                    {/*            <ExcelIcon size={"xl"}/>*/}
-                    {/*        </Link>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <div className={'flex flex-row items-center justify-center space-x-5'}>
+                        <div className='flex justify-center hover:scale-125 transition-all ease-in-out'>
+                            <Link href={`/sensors/full-screen/${sensor.id}`}
+                                  className={'text-black-100 hover:text-blue-300'}>
+                                <Icons.Extend size={"xl"}/>
+                            </Link>
+                        </div>
+                        <div className='flex justify-center hover:scale-125 transition-all ease-in-out'>
+                            <Link
+                                href={`${import.meta.env.VITE_API_BASE_URL}measurement/export?filter[sensor_id]=${sensor.id}&filter[timestamp]=${dateFilters[0].value},${dateFilters[1].value}`}
+                                target={'_blank'}
+                                className={'text-black-100 hover:text-teal-600'}>
+                                <Icons.Excel size={"xl"}/>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
                 <div className='flex'>

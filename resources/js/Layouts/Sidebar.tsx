@@ -14,7 +14,7 @@ const Sidebar = () => {
     };
 
     return(
-        <aside className='w-64 bg-black-900 text-black-100 flex flex-col justify-between'>
+        <aside className='h-screen sticky top-0 w-64 bg-black-900 text-black-100 flex flex-col justify-between' aria-label="Sidebar">
             <div className='flex flex-col py-3 space-y-6 justify-center'>
                 <SidebarHeader/>
                 {sensors.map((sensor: Sensor) => (

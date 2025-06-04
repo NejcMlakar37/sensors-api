@@ -2,10 +2,8 @@
 
 use App\Http\Controllers\BatteryStatusController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\EmailRecipientController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MeasurementController;
-use App\Http\Controllers\MeasurementLimitController;
 use App\Http\Controllers\SensorController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -81,22 +79,22 @@ Route::middleware(['throttle:30,1', 'auth:sanctum'])->group(function () {
     /**
      * Measurement limit routes
      */
-    Route::get("/measurement-limit/all", [MeasurementLimitController::class, "index"])->name("measurement-limit.all");
-    Route::get("/measurement-limit/{id}", [MeasurementLimitController::class, "show"])
-        ->name("measurement-limit.find");
-    Route::post("/measurement-limit/new", [MeasurementLimitController::class, "store"])->name("measurement-limit.new");
-    Route::put("/measurement-limit/update", [MeasurementLimitController::class, "update"])->name("measurement-limit.update");
-    Route::delete("/measurement-limit/{id}", [MeasurementLimitController::class, "destroy"])->name("measurement-limit.destroy");
+//    Route::get("/measurement-limit/all", [MeasurementLimitController::class, "index"])->name("measurement-limit.all");
+//    Route::get("/measurement-limit/{id}", [MeasurementLimitController::class, "show"])
+//        ->name("measurement-limit.find");
+//    Route::post("/measurement-limit/new", [MeasurementLimitController::class, "store"])->name("measurement-limit.new");
+//    Route::put("/measurement-limit/update", [MeasurementLimitController::class, "update"])->name("measurement-limit.update");
+//    Route::delete("/measurement-limit/{id}", [MeasurementLimitController::class, "destroy"])->name("measurement-limit.destroy");
 
     /**
      * Email recipients routes
      */
-    Route::get("/recipient/all", [EmailRecipientController::class, "index"])->name("recipient.all");
-    Route::get("/recipient/{id}", [EmailRecipientController::class, "show"])
-        ->name("recipient.find");
-    Route::post("/recipient/new", [EmailRecipientController::class, "store"])->name("recipient.new");
-    Route::put("/recipient/update", [EmailRecipientController::class, "update"])->name("recipient.update");
-    Route::delete("/recipient/{id}", [EmailRecipientController::class, "destroy"])->name("recipient.destroy");
+//    Route::get("/recipient/all", [EmailRecipientController::class, "index"])->name("recipient.all");
+//    Route::get("/recipient/{id}", [EmailRecipientController::class, "show"])
+//        ->name("recipient.find");
+//    Route::post("/recipient/new", [EmailRecipientController::class, "store"])->name("recipient.new");
+//    Route::put("/recipient/update", [EmailRecipientController::class, "update"])->name("recipient.update");
+//    Route::delete("/recipient/{id}", [EmailRecipientController::class, "destroy"])->name("recipient.destroy");
 
     /**
      * Incident routes

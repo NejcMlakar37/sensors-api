@@ -18,7 +18,7 @@ const useCrud = <T, >(path: string) => {
                 setIsCreating(false);
             },
             replace: true,
-            preserveState: false,
+            preserveState: true,
         });
     };
 

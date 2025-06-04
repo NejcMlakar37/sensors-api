@@ -1,4 +1,3 @@
-import useCrud from '../Hooks/useCrud';
 import {FormEvent, useCallback, useEffect, useState} from 'react';
 import {emptyLimit} from '../Services/empty-objects';
 import ComponentsContainer from '../Components/Containers/ComponentsContainer';
@@ -6,10 +5,12 @@ import Icons from '../Components/Icons/Icons';
 import PrimaryButton from '../Components/Buttons/PrimaryButton';
 import NumberInputField from '../Components/Form/NumberInputField';
 import SectionTitle from '../Components/Titles/SectionTitle';
+import {router} from '@inertiajs/react';
+import SaveButtonSpinner from '../Components/Icons/SaveButtonSpinner';
 
 const LimitsView = ({sensor, sensorLimit}: {sensor: Sensor, sensorLimit: SensorLimit}) => {
-    const {storeMutation, updateMutation} = useCrud<SensorLimit>('/sensor-limits');
     const [limit, setLimit] = useState<SensorLimit>(sensorLimit?? { ...emptyLimit, sensor: sensor });
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect((): void => {
         setLimit(sensorLimit?? { ...emptyLimit, sensor: sensor });
@@ -18,11 +19,42 @@ const LimitsView = ({sensor, sensorLimit}: {sensor: Sensor, sensorLimit: SensorL
     const saveLimit = useCallback((e: FormEvent): void => {
         e.preventDefault();
         if (limit.id === -1) {
-            storeMutation.mutate(limit);
+            router.post('/measurement-limit', {
+                    sensor_id: sensor.id,
+                    min_temp: limit.min_temp,
+                    max_temp: limit.max_temp,
+                    min_humidity: limit.min_humidity,
+                    max_humidity: limit.max_humidity
+                },
+                {
+                    only: ['limit', 'flash'],
+                    onStart: () => setIsLoading(true),
+                    onFinish: () => {
+                        setIsLoading(false);
+                    },
+                    preserveState: true,
+                    preserveScroll: true,
+                });
         } else {
-            updateMutation.mutate(limit.id, {...limit});
+            router.put(`/measurement-limit/${limit.id}`,
+                {
+                    sensor_id: sensor.id,
+                    min_temp: limit.min_temp,
+                    max_temp: limit.max_temp,
+                    min_humidity: limit.min_humidity,
+                    max_humidity: limit.max_humidity
+                },
+                {
+                    only: ['limit', 'flash'],
+                    onStart: () => setIsLoading(true),
+                    onFinish: () => {
+                        setIsLoading(false);
+                    },
+                    preserveState: true,
+                    preserveScroll: true,
+                });
         }
-    }, [limit, storeMutation, updateMutation]);
+    }, [limit, setIsLoading]);
 
     const inputHandler = useCallback((fieldName: string, value: number ): void => {
         setLimit(prevState => ({
@@ -88,7 +120,7 @@ const LimitsView = ({sensor, sensorLimit}: {sensor: Sensor, sensorLimit: SensorL
                         color: 'bg-blue-500 text-black-100',
                         activeColor: 'hover:bg-blue-400',
                         direction: 'flex-row-reverse space-x-reverse',
-                        icon: <Icons.Save size={'1x'}/>,
+                        icon: isLoading? <SaveButtonSpinner /> : <Icons.Save size={'1x'}/>,
                         type: 'submit',
                         form: 'limits-form'
                     }}/>

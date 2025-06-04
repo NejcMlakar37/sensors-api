@@ -55,6 +55,7 @@ const RecipientsView = ({sensor, recipients}: {sensor: Sensor, recipients: Recip
                             <IconButton props={{
                                 onClick: () => handleOpenModal(recipient),
                                 icon: <Icons.Edit size={'1x'} />,
+                                title: 'Uredi prejemnika',
                                 color: 'text-blue-400',
                                 activeColor: 'hover:text-blue-300 hover:scale-110',
                                 direction: 'row',
@@ -64,6 +65,7 @@ const RecipientsView = ({sensor, recipients}: {sensor: Sensor, recipients: Recip
                             <IconButton props={{
                                 onClick: () => handleDelete(recipient.id),
                                 icon: <Icons.Delete size={'1x'}/>,
+                                title: 'Izbriši prejemnika',
                                 color: 'text-red-400',
                                 activeColor: 'hover:text-red-300 hover:scale-110',
                                 direction: 'row',

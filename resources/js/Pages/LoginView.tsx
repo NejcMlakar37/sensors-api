@@ -35,7 +35,6 @@ const LoginView = () => {
                 onStart: () => setIsLoading(true),
                 onFinish: () => setIsLoading(false),
                 onError: (error) => {
-                    console.log(error);
                     setError(error.message);
                 },
             },
