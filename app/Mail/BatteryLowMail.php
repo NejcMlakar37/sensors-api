@@ -2,33 +2,28 @@
 
 namespace App\Mail;
 
-use App\Models\Sensor;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AlertEmail extends Mailable
+class BatteryLowMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     private array $sensor;
-    private array $incident;
+    private float $battery;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Sensor $sensor, string $message, bool $isAlert)
+    public function __construct(array $sensor, float $battery)
     {
-        $this->sensor = $sensor->toArray();
-        $this->incident = array(
-            'time' => Carbon::now()->format('H:i:s d.M.Y'),
-            'isAlert' => $isAlert,
-            'message' => $message
-        );
+        $this->sensor = $sensor;
+        $this->battery = $battery;
     }
 
     /**
@@ -37,7 +32,7 @@ class AlertEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Alert Email',
+            subject: 'Potrebna je zamenjava baterije!',
         );
     }
 
@@ -47,11 +42,11 @@ class AlertEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.alert',
-            with: [
+            markdown: 'emails.battery-low',
+            with:  [
                 'sensor' => $this->sensor,
-                'incident' => $this->incident,
-            ],
+                'battery' => $this->battery,
+            ]
         );
     }
 

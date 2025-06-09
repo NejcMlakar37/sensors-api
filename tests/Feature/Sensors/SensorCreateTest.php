@@ -9,12 +9,30 @@ class SensorCreateTest extends TestCase
 {
     use RefreshDatabase;
 
+    private int $companyId = -1;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $request = [
+            'name' => 'test-company-1',
+            'address' => 'Hala 1',
+            'city' => 'Mengeš',
+            'postcode' => '1234',
+            'country' => 'Slovenija',
+            'email' => 't.testko@gmail.com',
+        ];
+
+        $this->companyId = json_decode($this->json('post', 'api/company/new', $request)->getContent(), true)['last_insert_id'];
+    }
+
     public function test_create_all_ok(): void
     {
         $request = [
             'name' => 'test-sensor-1',
             'location' => 'Hala 1',
             'position' => 89,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('post', 'api/sensor/new', $request);
@@ -28,6 +46,7 @@ class SensorCreateTest extends TestCase
         $request = [
             'name' => 'test-sensor-1',
             'position' => 89,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('post', 'api/sensor/new', $request);
@@ -49,6 +68,7 @@ class SensorCreateTest extends TestCase
             'name' => 12321,
             'location' => 'Hala 1',
             'position' => 89,
+            'company' => $this->companyId,
         ];
 
         $response = $this->json('post', 'api/sensor/new', $request);
@@ -70,6 +90,7 @@ class SensorCreateTest extends TestCase
             'name' => 'test-sensor-1',
             'location' => 'Hala 1',
             'position' => 4539,
+            'company' => $this->companyId,
         ];
 
         $this->json('post', 'api/sensor/new', $request);
@@ -84,6 +105,28 @@ class SensorCreateTest extends TestCase
                 ],
                 'position' => [
                     'Polje POZICIJA s to vrednostjo že obstaja.',
+                ]
+            ]
+        ]);
+    }
+
+    public function test_create_nonexistent_company(): void
+    {
+        $request = [
+            'name' => 'test-sensor-1',
+            'location' => 'Hala 1',
+            'position' => 89,
+            'company' => 2312321,
+        ];
+
+        $response = $this->json('post', 'api/sensor/new', $request);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Izbran/a "PODJETJE" ni veljaven/a.',
+            'errors' => [
+                'company' => [
+                    'Izbran/a "PODJETJE" ni veljaven/a.'
                 ]
             ]
         ]);

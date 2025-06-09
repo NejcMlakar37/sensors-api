@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::shouldBeStrict();
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
+
+        JsonResource::withoutWrapping();
     }
 }

@@ -49,9 +49,9 @@ class MeasurementLimitController extends Controller
         );
 
         if($limit->save()) {
-            return response()->insert($limit->id);
+            return response()->successRedirect('Meje so bile uspešno shranjene!');
         } else {
-            return response()->error('Prišlo je do napake pri shranjevanju mej!');
+            return response()->errorRedirect('Prišlo je do napake pri shranjevanju mej!');
         }
     }
 
@@ -84,9 +84,9 @@ class MeasurementLimitController extends Controller
         );
 
         if($limit->save()) {
-            return response()->success(new MeasurementLimitResource($limit));
+            return response()->successRedirect('Meje so bile uspešno shranjene!');
         } else {
-            return response()->error('Prišlo je do napake pri posodabljanju limita!');
+            return response()->errorRedirect('Prišlo je do napake pri posodabljanju mej!');
         }
     }
 
@@ -99,9 +99,9 @@ class MeasurementLimitController extends Controller
     {
         $limit = MeasurementLimit::query()->findOrFail($id);
         if($limit->delete()) {
-            return response()->success('Limit je bil uspešno izbrisan!');
+            return response()->successRedirect('Meja je bil uspešno izbrisana!');
         } else {
-            return response()->error('Prišlo je do napake pri brisanju limita!');
+            return response()->errorRedirect('Prišlo je do napake pri brisanju meje!');
         }
     }
 }

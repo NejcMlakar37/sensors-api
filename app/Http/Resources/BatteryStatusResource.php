@@ -18,7 +18,7 @@ class BatteryStatusResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'sensor_id' => $this->resource->sensor_id,
-            'status' => number_format((float)$this->resource->status, 2, '.', ''),
+            'status' => $this->resource->status,
             'created_at' => Carbon::parse($this->resource->created_at)->addHours(2)->format('Y-m-d'),
         ];
     }

@@ -39,9 +39,9 @@ class EmailRecipientController extends Controller
         ]);
 
         if($recipient->save()) {
-            return response()->insert($recipient->id);
+            return response()->successRedirect('Prejemnik je bil uspešno dodan!');
         } else {
-            return response()->error('Prišlo je do napake pri shranjevanju prejemnika!');
+            return response()->errorRedirect('Prišlo je do težave pri ustvarjanju prejemnika!');
         }
     }
 
@@ -69,9 +69,9 @@ class EmailRecipientController extends Controller
 
         if($recipient->save()) {
             $recipient->refresh();
-            return response()->success(new EmailRecipientResource($recipient));
+            return response()->successRedirect('Prejemnik je bil uspešno posodobljen!');
         } else {
-            return response()->error('Prišlo je do napake pri posodabljanju prejemnika!');
+            return response()->errorRedirect('Prišlo je do težave pri posodabljanju prejemnika!');
         }
     }
 
@@ -84,9 +84,9 @@ class EmailRecipientController extends Controller
     {
         $recipient = EmailRecipient::query()->findOrFail($id);
         if($recipient->delete()) {
-            return response()->success('Prejemnik je bil uspešno izbrisan!');
+            return response()->successRedirect('Prejemnik je bil uspešno izbrisan!');
         } else {
-            return response()->error('Prišlo je do napake pri brisanju prejemnika!');
+            return response()->errorRedirect('Prišlo je do težave pri izbrisu prejemnika!');
         }
     }
 }

@@ -6,7 +6,6 @@ use App\Exports\MeasurementsExport;
 use App\Http\Requests\NewMeasurementRequest;
 use App\Http\Resources\MeasurementResource;
 use App\Models\Measurement;
-use App\Models\Sensor;
 use App\Services\AlarmService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,8 +24,10 @@ class MeasurementController extends Controller
      */
     public function store(NewMeasurementRequest $request, AlarmService $alarmService): JsonResponse
     {
+        dd($request->user()->id, auth()->user()->company_id);
+
         $measurement = new Measurement([
-            'sensor_id' => $request->input('sensor_id'),
+            'sensor_id' => $request->user()->id,
             'temperature' => $request->input('temperature'),
             'humidity' => $request->input('humidity'),
         ]);

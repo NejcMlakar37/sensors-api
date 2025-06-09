@@ -80,14 +80,14 @@ return [
         'array' => 'The :attribute must not have more than :value items.',
         'file' => 'The :attribute must be less than or equal to :value kilobytes.',
         'numeric' => 'The :attribute must be less than or equal to :value.',
-        'string' => 'The :attribute must be less than or equal to :value characters.',
+        'string' => 'Polje :attribute mora imeti vsaj :value števk.',
     ],
     'mac_address' => 'The :attribute must be a valid MAC address.',
     'max' => [
         'array' => 'The :attribute must not have more than :max items.',
         'file' => 'The :attribute must not be greater than :max kilobytes.',
         'numeric' => 'The :attribute must not be greater than :max.',
-        'string' => 'The :attribute must not be greater than :max characters.',
+        'string' => 'Polje :attribute ne sme imeti več kot :max števk.',
     ],
     'max_digits' => 'Polje ":attribute" ne more imeti več kot :max števk.',
     'mimes' => 'The :attribute must be a file of type: :values.',
@@ -181,5 +181,10 @@ return [
         'temperature' => 'TEMPERATURA',
         'humidity' => 'VLAGA',
         'status' => 'STATUS',
+        'address' => 'NASLOV',
+        'city' => 'MESTO',
+        'postcode' => 'POŠTNA ŠTEVILKA',
+        'country' => 'DRŽAVA',
+        'company' => 'PODJETJE'
     ],
 ];

@@ -23,6 +23,7 @@ class CreateSensorRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company' => ['required', 'numeric', 'exists:companies,id'],
             'name' => ['required', 'string', 'unique:sensors,name', 'max:75'],
             'location' => ['required', 'string', 'max:75'],
             'position' => ['required', 'numeric', 'unique:sensors,position'],

@@ -16,9 +16,9 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      dev-sensors-network:
+      sensors-network:
         aliases:
-          - dev-sensors-network
+          - sensors-network
 
   app:
     container_name: dev-sensors-api
@@ -34,42 +34,35 @@ services:
     tty: true
     ports:
       - '8888:8888'
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
-      dev-sensors-network:
+      sensors-network:
         aliases:
-          - dev-sensors-network
+          - sensors-network
     volumes:
       - ./:/var/www/
+      - ./.env.dev:/var/www/.env
     working_dir: /var/www/
     depends_on:
       - mysql
 
-  nginx:
-    image: nginx:1.17-alpine
-    container_name: dev-sensors-api-nginx
-    restart: unless-stopped
-    ports:
-      - "8000:8888"
-    volumes:
-      - ./:/var/www
-      - ./docker-compose/nginx:/etc/nginx/conf.d
-    networks:
-      dev-sensors-network:
-        aliases:
-          - dev-sensors-network
-
   mailhog:
     image: 'mailhog/mailhog:latest'
+    container_name: sensors-smtp-server
     ports:
       - '${FORWARD_MAILHOG_PORT:-1025}:1025'
       - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
     networks:
-      dev-sensors-network:
+      sensors-network:
         aliases:
-          - dev-sensors-network
+          - sensors-network
 
 networks:
-  dev-sensors-network:
+  sensors-network:
+    name: sensors-network
     driver: bridge
 volumes:
   db_data:

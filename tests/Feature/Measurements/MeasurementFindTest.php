@@ -26,11 +26,11 @@ class MeasurementFindTest extends TestCase
                 'id' => $measurementId,
                 'sensor' => [
                     'id' => 1,
-                    'name' => 'Sensor 1',
+                    'name' => 'Sensor 1 - 1',
                     'location' => 'Hala 1',
                 ],
-                'temperature' => 24.55,
-                'humidity' => 44.90,
+                'temperature' => '24.55',
+                'humidity' => '44.90',
             ],
         ]);
     }

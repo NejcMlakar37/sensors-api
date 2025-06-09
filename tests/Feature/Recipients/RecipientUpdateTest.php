@@ -3,7 +3,6 @@
 namespace Tests\Feature\Recipients;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RecipientUpdateTest extends TestCase
@@ -24,7 +23,6 @@ class RecipientUpdateTest extends TestCase
         $this->recipientId = json_decode($this->json('post', 'api/recipient/new', $request)->getContent(), true)['last_insert_id'];
     }
 
-
     public function test_update_all_ok(): void
     {
         $request = [
@@ -42,7 +40,7 @@ class RecipientUpdateTest extends TestCase
                 'id' => $this->recipientId,
                 'sensor' => [
                     'id' => 2,
-                    'name' => 'Sensor 2',
+                    'name' => 'Sensor 2 - 1',
                     'location' => 'Hala 2',
                 ],
                 'email' => 'n.mlakar123@resistec.si',
